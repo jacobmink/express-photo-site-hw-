@@ -2,14 +2,19 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-const userController = require('./controllers/userController');
-const photoController = require('./controllers/photoController');
 require('./db/db');
 
+const userController = require('./controllers/userController');
 
+// const photoController = require('./controllers/photoController');
 
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(express.static('public'));
+app.use(bodyParser.urlencoded({ extended:false }));
 app.use(methodOverride('_method'));
+app.use('/users', userController);
+// app.use('/photos', photoController);
+
+
 
 app.get('/', (req,res)=>{
     res.render('index.ejs');

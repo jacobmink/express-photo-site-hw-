@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <title>Show User</title>
+</head>
+<body>
+    <header>
+        <h1><%= user.name %>'s Page</h1>
+        <nav>
+            <ul>
+                <li><a href="/"><button>Home</button></a></li>
+                <li><a href="/users"><button>Users Index</button></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        User: <%= user.name %> <br>
+        <a href="/users/<%= user._id %>/edit"><button>Edit this user!</button></a><br>
+        <form action="/users/<%= user._id %>?_method=DELETE" method="POST"><button type="submit">Delete this user!</button></form>
+    </main>
+    
+</body>
+</html>

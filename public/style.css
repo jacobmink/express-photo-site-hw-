@@ -1,0 +1,34 @@
+body{
+    background: gray;
+}
+
+h1{
+    font-family: fantasy;
+}
+
+nav{
+    border-bottom: 2px solid lightgray;
+}
+
+nav li{
+    display: inline-block;
+}
+
+nav button{
+    background: blue;
+    color: white;
+}
+
+ul.index-list{
+    list-style-type: none;
+    text-align: center;
+}
+
+.index-list li{
+    background: rgba(110, 188, 236, 0.568);
+}
+
+li a{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-decoration: none;
+}
