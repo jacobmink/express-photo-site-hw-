@@ -17,7 +17,7 @@
     <main>
         <ul class="index-list">
             <% users.forEach((user)=>{ %>
-                <li><a href="/<%= user._id %>"><%= user.name %></a></li>
+                <li><a href="/users/<%= user._id %>"><%= user.name %></a></li>
                 <a href="/users/<%= user._id %>/edit"><button>Edit this user!</button></a>
             <% }) %>
 

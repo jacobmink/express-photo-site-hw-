@@ -6,13 +6,13 @@ require('./db/db');
 
 const userController = require('./controllers/userController');
 
-// const photoController = require('./controllers/photoController');
+const photoController = require('./controllers/photoController');
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended:false }));
 app.use(methodOverride('_method'));
 app.use('/users', userController);
-// app.use('/photos', photoController);
+app.use('/photos', photoController);
 
 
 

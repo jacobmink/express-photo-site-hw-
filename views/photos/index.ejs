@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <title>Photos Index</title>
+</head>
+<body>
+    <header>
+        <h1>Photos Index</h1>
+        <nav>
+            <ul>
+                <li><a href="/photos/new"><button>New Post!</button></a></li>
+                <li><a href="/users"><button>All Contributors</button></a></li>
+                <li><a href="/photos"><button>All Submissions</button></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <ul class="index-list">
+            <% for(let i = 0; i < photos.length; i++){ %>
+                <li><a href="/photos/<%= photos[i]._id %>"> <img src="<%= photos[i].url %>" alt="<%= photos[i].title %>"></a></li>
+                
+
+            <% } %>
+        </ul>
+    </main>
+    
+    
+</body>
+</html>

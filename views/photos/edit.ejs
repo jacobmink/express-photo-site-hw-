@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <title>Edit Photo</title>
+</head>
+<body>
+    <header>
+        <h1>Edit this Photo</h1>
+        <nav>
+            <ul>
+                <li><a href="/"><button>Home</button></a></li>
+                <li><a href="/photos"><button>Photo Index</button></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <form action="/photos/<%= photo._id %>?_method=PUT" method="POST">
+        <select name="userId">
+            <% allUsers.forEach((user)=>{ %>
+                <option value="<%= user._id %>"><%= user.name %></option>
+            <% }) %>
+            
+        </select><br>
+        Title: <input type="text" name="title" value="<%= photo.title %>"><br>
+        URL: <textarea type="text" name="url"><%= photo.url %></textarea><br>
+        <button type="submit">Edit this Photo</button>
+        
+        </form>
+    </main>
+    
+</body>
+</html>

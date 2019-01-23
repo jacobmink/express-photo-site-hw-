@@ -18,6 +18,13 @@
         User: <%= user.name %> <br>
         <a href="/users/<%= user._id %>/edit"><button>Edit this user!</button></a><br>
         <form action="/users/<%= user._id %>?_method=DELETE" method="POST"><button type="submit">Delete this user!</button></form>
+        <section>
+            <% user.photos.forEach((photo)=>{ %>
+                <img src="<%= photo.url %>" alt="<%= photo.title %>">
+            <% }) %>
+
+
+        </section>
     </main>
     
 </body>
