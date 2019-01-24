@@ -5,166 +5,107 @@ const User = require('../models/users');
 
 // new
 router.route('/new')
-    .get((req,res)=>{
-        User.find({}, (err,foundUsers)=>{
-            if(err){
-                res.send(err);
-            }
+    .get(async (req,res)=>{
+        try{
+            const foundUsers = await User.find({});
             res.render('photos/new.ejs', {
                 users: foundUsers
             });
-        });
+        }catch(err){
+            res.send(err);
+        }
     });
 
 router.route('/')
     // index
-    .get((req,res)=>{
-        Photo.find({}, (err,foundPhotos)=>{
-            if(err){
-                res.send(err);
-            }
+    .get(async (req,res)=>{
+        try{
+            const foundPhotos = await Photo.find({});
             res.render('photos/index.ejs', {
                 photos: foundPhotos
             });
-        });
+        }catch(err){
+            res.send(err);
+        }
     })
     // post
-    .post((req,res)=>{
-        User.findById(req.body.userId, (err,foundUser)=>{
-            if(err){
-                res.send(err);
-            }
-            Photo.create(req.body, (err,newPhoto)=>{
-                if(err){
-                    res.send(err);
-                }
-                foundUser.photos.push(newPhoto);
-                foundUser.save((err,data)=>{
-                    if(err){
-                        res.send(err);
-                    }
-                    res.redirect('/photos');
-                });// end save
-            });// end new photo
-        });// end user query
+    .post(async (req,res)=>{
+        try{
+            const foundUser = await User.findById(req.body.userId);
+            const newPhoto = await Photo.create(req.body);
+            foundUser.photos.push(newPhoto);
+            await foundUser.save();
+            res.redirect('/photos');
+        }catch(err){
+            res.send(err);
+        }
     });
 
 router.route('/:id')
     // show
-    .get((req,res)=>{
-        Photo.findById(req.params.id, (err,foundPhoto)=>{
-            if(err){
-                res.send(err);
-            }
-            User.findOne({'photos._id': req.params.id}, (err,foundUser)=>{
-                if(err){
-                    res.send(err);
-                }
-                res.render('photos/show.ejs', {
-                    photo: foundPhoto,
-                    user: foundUser
-                })
-            })
-            
-        })
+    .get(async (req,res)=>{
+        try{
+            const foundPhoto = await Photo.findById(req.params.id);
+            const foundUser = await User.findOne({'photos._id': req.params.id});
+            res.render('photos/show.ejs', {
+                photo: foundPhoto,
+                user: foundUser
+            });
+        }catch(err){
+            res.send(err);
+        }
     })
     // update
-    .put((req,res)=>{
-        Photo.findByIdAndUpdate(req.params.id, req.body, {new: true}, (err,updatedPhoto)=>{
-            if(err){
-                res.send(err);
+    .put(async (req,res)=>{
+        try{
+            const updatedPhoto = await Photo.findByIdAndUpdate(req.params.id, req.body, {new: true});
+            const foundUser = await User.findOne({'photos._id': req.params.id});
+
+            if(foundUser._id.toString() !== req.body.userId){
+                foundUser.photos.id(req.params.id).remove();
+                await foundUser.save();
+                const newUser = await User.findById(req.body.userId);
+                newUser.photos.push(updatedPhoto);
+                await newUser.save();
+                res.redirect(`/photos/${req.params.id}`);
+            }else{
+                const thisPhoto = foundUser.photos.id(req.params.id);
+                thisPhoto.set(req.body);
+                await foundUser.save();
+                res.redirect(`/photos/${req.params.id}`);
             }
-            User.findOne({'photos._id': req.params.id}, (err,foundUser)=>{
-                if(err){
-                    res.send(err);
-                }
-                if(foundUser._id.toString() !== req.body.userId){
-                    foundUser.photos.id(req.params.id).remove();
-                    foundUser.save((err,savedFoundUser)=>{
-                        if(err){
-                            res.send(err);
-                        }
-                        User.findById(req.body.userId, (err,newUser)=>{
-                            if(err){
-                                res.send(err);
-                            }
-                            newUser.photos.push(updatedPhoto);
-                            newUser.save((err,savedNewUser)=>{
-                                if(err){
-                                    res.send(err);
-                                }
-                                res.redirect(`/photos/${req.params.id}`);
-                            });// end savedNewUser
-                        });// end new user query
-                    });// end savedFoundUser
-                }else{
-                    const thisPhoto = foundUser.photos.id(req.params.id);
-                    thisPhoto.set(req.body);
-                    foundUser.save((err,data)=>{
-                        if(err){
-                            res.send(err);
-                        }
-                        res.redirect(`/photos/${req.params.id}`);
-                    });// end save
-                }// end else
-            });// end og user query
-        });// end photo query
+        }catch(err){
+            res.send(err);
+        }
     })
     // delete
-    .delete((req,res)=>{
-        Photo.findByIdAndDelete(req.params.id, (err,deletedPhoto)=>{
-            if(err){
-                res.send(err);
-            }
-            User.findOne({'photos._id': req.params.id}, (err,foundUser)=>{
-                if(err){
-                    res.send(err);
-                }else{
-                    foundUser.photos.id(req.params.id).remove();
-                    foundUser.save((err,data)=>{
-                        if(err){
-                            res.send(err);
-                        }
-                        res.redirect('/photos');
-                    });
-                }
-            });
-        });
+    .delete(async (req,res)=>{
+        try{
+            await Photo.findByIdAndDelete(req.params.id);
+            const foundUser = await User.findOne({'photos._id': req.params.id});
+            foundUser.photos.id(req.params.id).remove();
+            await foundUser.save();
+            res.redirect('/photos');
+        }catch(err){
+            res.send(err);
+        }
     })
 
 // edit
 router.route('/:id/edit')
-    .get((req,res)=>{
-        Photo.findById(req.params.id, (err,foundPhoto)=>{
-            if(err){
-                res.send(err);
-            }
-            User.find({}, (err,allUsers)=>{
-                if(err){
-                    res.send(err);
-                }
-                User.findOne({'photos._id': req.params.id}, (err,foundUser)=>{
-                    if(err){
-                        res.send(err);
-                    }
-                    res.render('photos/edit.ejs', {
-                        photo: foundPhoto,
-                        allUsers: allUsers,
-                        user: foundUser
-                    });
-                });
+    .get(async (req,res)=>{
+        try{
+            const foundPhoto = await Photo.findById(req.params.id);
+            const allUsers = await User.find({});
+            const foundUser = await User.findOne({'photos._id': req.params.id});
+            res.render('photos/edit.ejs', {
+                photo: foundPhoto,
+                allUsers: allUsers,
+                user: foundUser
             });
-        });
+        }catch(err){
+            res.send(err);
+        }
     });
-
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

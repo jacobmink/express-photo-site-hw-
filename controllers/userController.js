@@ -10,84 +10,73 @@ router.get('/new', (req,res)=>{
 
 router.route('/')
     // index
-    .get((req,res)=>{
-        User.find(req.body, (err,data)=>{
-            if(err){
-                res.send(err);
-            }
+    .get(async (req,res)=>{
+        try{
+            const data = await User.find(req.body);
             res.render('users/index.ejs', {
                 users: data
             });
-        });
+        }catch(err){
+            res.send(err);
+        }
     })
     // post
-    .post((req,res)=>{
-        User.create(req.body, (err,data)=>{
-            if(err){
-                res.send(err);
-            }
+    .post(async (req,res)=>{
+        try{
+            await User.create(req.body);
             res.redirect('/users');
-        });
+        }catch(err){
+            res.send(err);
+        }
     });
 
 router.route('/:id')
     // show
-    .get((req,res)=>{
-        User.findById(req.params.id, (err,data)=>{
-            if(err){
-                res.send(err);
-            }
+    .get(async (req,res)=>{
+        try{
+            const data = await User.findById(req.params.id);
             res.render('users/show.ejs', {
                 user: data
             });
-        });
+        }catch(err){
+            res.send(err);
+        }
     })
     // update
-    .put((req,res)=>{
-        User.findByIdAndUpdate(req.params.id, req.body, (err,data)=>{
-            if(err){
-                res.send(err);
-            }
+    .put(async (req,res)=>{
+        try{
+            await User.findByIdAndUpdate(req.params.id, req.body);
             res.redirect(`/users/${req.params.id}`);
-        });
+        }catch(err){
+            res.send(err);
+        }
     })
     // delete
-    .delete((req,res)=>{
-        User.findByIdAndDelete(req.params.id, (err,deletedUser)=>{
-            if(err){
-                res.send(err);
-            }else{
-                const photoIds = [];
-                deletedUser.photos.forEach((photo)=>{
-                    photoIds.push(photo._id);
-                });
-                Photo.deleteMany({_id:{$in: photoIds}}, (err,data)=>{
-                    if(err){
-                        res.send(err);
-                    }
-                    res.redirect('/users');
-                });
-            }
-        });
+    .delete(async (req,res)=>{
+        try{
+            const deletedUser = await User.findByIdAndDelete(req.params.id);
+            const photoIds = [];
+            deletedUser.photos.forEach((photo)=>{
+                photoIds.push(photo._id);
+            });
+            await Photo.deleteMany({_id:{$in: photoIds}});
+            res.redirect('/users');
+        }catch(err){
+            res.send(err);
+        }
     });
 
     // edit
 router.route('/:id/edit')
-    .get((req,res)=>{
-        User.findById(req.params.id, (err,data)=>{
-            if(err){
-                res.send(err);
-            }
+    .get(async (req,res)=>{
+        try{
+            const data = await User.findById(req.params.id);
             res.render('users/edit.ejs', {
                 user: data
             });
-        });
+        }catch(err){
+            res.send(err);
+        }
     });
-
-
-
-
-
-
 
 module.exports = router;
